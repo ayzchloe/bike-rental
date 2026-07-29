@@ -8,7 +8,7 @@
     <a class="flex items-center px-lg py-md mb-xs text-white/60 hover:text-white transition-all font-body-md" data-path="browse-motorbikes" href="{{ route('catalog.index') }}"><span class="material-symbols-outlined mr-md">motorcycle</span>Browse Motorbikes</a>
 
     <!-- Wired Active Rides Section directly back to Dashboard tracking module -->
-    <a class="flex items-center px-lg py-md mb-xs text-white/60 hover:text-white transition-all font-body-md" data-path="active-rides" href="{{ route('dashboard') }}"><span class="material-symbols-outlined mr-md">route</span>Active Rides</a>
+    <a class="flex items-center px-lg py-md mb-xs text-white/60 hover:text-white transition-all font-body-md" data-path="active-rides" href="{{ route('dashboard') }}#active-rides"><span class="material-symbols-outlined mr-md">route</span>Active Rides</a>
 
     <!-- Current Page Highlight: Wallet -->
     <a aria-current="page" class="flex items-center px-lg py-md mb-xs transition-all font-body-md bg-white/5 border-l-4 border-primary text-white" data-path="wallet" href="{{ route('wallet.index') }}"><span class="material-symbols-outlined mr-md">account_balance_wallet</span>Wallet</a>
