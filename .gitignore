@@ -1,58 +1,43 @@
-```
+```gitignore
 # Compiled and build artifacts
 *.pyc
 __pycache__/
 *.o
 *.obj
-dist/
-build/
-target/
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
 # Dependencies
 node_modules/
-vendor/
-*.egg-info/
-.Python
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-*.swo
-
-# Environment
+venv/
+.venv/
 .env
 .env.local
 .env.*
-.env.local.*
+
+# Build directories
+dist/
+build/
+target/
+*.log
+*.tmp
+*.swp
 
 # Editors
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
-nbproject/
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
 
-# Laravel specific
-bootstrap/cache/
-storage/
-public/storage
-composer.lock
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# PHP
-*.php~
+# Cache directories
+.mypy_cache/
+.pytest_cache/
+.gradle/
 ```
