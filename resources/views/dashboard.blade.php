@@ -1,425 +1,279 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <style>
-        @layer base {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velex Dashboard</title>
 
-            html,
-            body {
-                margin: 0;
-                padding: 0;
-            }
-
-            body {
-                overscroll-behavior: none;
-            }
-
-            main>:first-child {
-                margin-top: 0 !important;
-            }
-
-            main>:last-child {
-                margin-bottom: 0 !important;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
+    <!-- Bypasses Vite/npm and loads Tailwind directly in the browser -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-primary-container": "#f5fff6",
-                        "surface-container-low": "#f2f4f6",
-                        "secondary-fixed": "#dbe1ff",
-                        "on-surface": "#191c1e",
-                        "tertiary-fixed-dim": "#73d6d4",
-                        "outline-variant": "#bdcac0",
-                        "background": "#f7f9fb",
-                        "surface-container-high": "#e6e8ea",
-                        "surface": "#f7f9fb",
-                        "tertiary-container": "#008281",
-                        "secondary-container": "#d8deff",
-                        "on-secondary-container": "#5a627e",
-                        "on-surface-variant": "#3e4942",
-                        "surface-dim": "#d8dadc",
-                        "primary-fixed": "#8ef7c4",
-                        "secondary": "#565d79",
-                        "on-tertiary-fixed": "#00201f",
-                        "primary-fixed-dim": "#72daa9",
-                        "on-primary-fixed-variant": "#005236",
-                        "on-secondary-fixed": "#131a33",
-                        "primary-container": "#00855b",
-                        "on-primary": "#ffffff",
-                        "inverse-surface": "#2d3133",
-                        "on-error": "#ffffff",
-                        "secondary-fixed-dim": "#bec5e5",
-                        "primary": "#006947",
-                        "on-error-container": "#93000a",
-                        "on-secondary-fixed-variant": "#3e4660",
-                        "surface-container": "#eceef0",
-                        "error-container": "#ffdad6",
-                        "surface-container-highest": "#e0e3e5",
-                        "on-tertiary-container": "#f3fffe",
-                        "on-primary-fixed": "#002113",
-                        "surface-variant": "#e0e3e5",
-                        "tertiary": "#006766",
-                        "outline": "#6e7a72",
-                        "on-secondary": "#ffffff",
-                        "tertiary-fixed": "#90f3f1",
-                        "inverse-primary": "#72daa9",
-                        "on-tertiary": "#ffffff",
-                        "error": "#ba1a1a",
-                        "inverse-on-surface": "#eff1f3",
-                        "surface-bright": "#f7f9fb",
-                        "surface-container-lowest": "#ffffff",
-                        "on-tertiary-fixed-variant": "#00504f",
-                        "on-background": "#191c1e",
-                        "surface-tint": "#006c49"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "base": "4px",
-                        "lg": "24px",
-                        "sm": "8px",
-                        "xl": "40px",
-                        "container-max": "1280px",
-                        "xs": "4px",
-                        "gutter": "24px",
-                        "md": "16px"
-                    },
-                    "fontFamily": {
-                        "headline-xl": ["Hanken Grotesk"],
-                        "body-lg": ["Work Sans"],
-                        "label-sm": ["JetBrains Mono"],
-                        "body-sm": ["Work Sans"],
-                        "headline-lg": ["Hanken Grotesk"],
-                        "label-md": ["JetBrains Mono"],
-                        "headline-md": ["Hanken Grotesk"],
-                        "headline-lg-mobile": ["Hanken Grotesk"],
-                        "body-md": ["Work Sans"]
-                    },
-                    "fontSize": {
-                        "headline-xl": ["48px", {
-                            "lineHeight": "56px",
-                            "letterSpacing": "-0.02em",
-                            "fontWeight": "700"
-                        }],
-                        "body-lg": ["18px", {
-                            "lineHeight": "28px",
-                            "fontWeight": "400"
-                        }],
-                        "label-sm": ["12px", {
-                            "lineHeight": "14px",
-                            "fontWeight": "500"
-                        }],
-                        "body-sm": ["14px", {
-                            "lineHeight": "20px",
-                            "fontWeight": "400"
-                        }],
-                        "headline-lg": ["32px", {
-                            "lineHeight": "40px",
-                            "letterSpacing": "-0.01em",
-                            "fontWeight": "700"
-                        }],
-                        "label-md": ["14px", {
-                            "lineHeight": "16px",
-                            "letterSpacing": "0.05em",
-                            "fontWeight": "500"
-                        }],
-                        "headline-md": ["24px", {
-                            "lineHeight": "32px",
-                            "fontWeight": "600"
-                        }],
-                        "headline-lg-mobile": ["24px", {
-                            "lineHeight": "32px",
-                            "fontWeight": "700"
-                        }],
-                        "body-md": ["16px", {
-                            "lineHeight": "24px",
-                            "fontWeight": "400"
-                        }]
-                    }
-                }
-            }
-        }
-    </script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Work+Sans:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
 </head>
 
-<body class="bg-background font-body-md text-on-surface">
-    <!-- Main Layout Container -->
-    <div class="flex min-h-screen">
+<body class="bg-slate-50 text-slate-900 antialiased font-sans flex min-h-screen">
 
-        <!-- Sidebar Navigation -->
-        <aside class="fixed left-0 top-0 h-full w-[280px] bg-[#0B132B] text-white z-50 flex flex-col shadow-xl justify-between">
+    <!-- SIDEBAR NAVBAR -->
+    <aside class="w-64 bg-slate-950 text-white flex flex-col justify-between p-6 shrink-0">
+        <div>
+            <!-- Logo Section -->
+            <div class="flex items-center gap-2 mb-8 text-emerald-400 font-bold text-xl tracking-wider">
+                🚲 VELEX
+            </div>
+
+            <!-- Mode Switcher -->
+            <form action="/user/switch-mode" method="POST" class="mb-8">
+                @csrf
+                <button type="submit"
+                    class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-3 px-4 rounded-xl flex items-center justify-between transition">
+                    <span>SWITCH TO OWNER MODE</span>
+                    <span>⇄</span>
+                </button>
+            </form>
+
+            <!-- Navigation Links -->
+            <!-- Navigation Links -->
+
+            <nav class="space-y-1 px-2">
+                <!-- Dashboard -->
+                <a href="/dashboard"
+                    class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-semibold transition-all group {{ request()->is('dashboard') ? 'bg-[#1E293B] text-white border-l-4 border-[#10B981] pl-3' : 'text-[#8A94A6] hover:bg-[#111C2E] hover:text-white' }}">
+                    <svg class="w-5 h-5 {{ request()->is('dashboard') ? 'text-[#10B981]' : 'text-[#475569] group-hover:text-[#94A3B8]' }}"
+                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 15.75V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Browse Motorbikes -->
+                <a href="/catalog"
+                    class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-semibold transition-all group {{ request()->is('catalog') ? 'bg-[#1E293B] text-white border-l-4 border-[#10B981] pl-3' : 'text-[#8A94A6] hover:bg-[#111C2E] hover:text-white' }}">
+                    <svg class="w-5 h-5 {{ request()->is('catalog') ? 'text-[#10B981]' : 'text-[#475569] group-hover:text-[#94A3B8]' }}"
+                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="5.5" cy="17.5" r="2.5" />
+                        <circle cx="18.5" cy="17.5" r="2.5" />
+                        <path d="M15 6.5a2.5 2.5 0 0 0-2.5-2.5H9L6 11H3.5M12.5 4v11M18.5 15l-3.5-6H9.5" />
+                    </svg>
+                    <span>Browse Motorbikes</span>
+                </a>
+
+                <!-- Active Rides -->
+                <a href="/booking"
+                    class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-semibold transition-all group {{ request()->is('booking') ? 'bg-[#1E293B] text-white border-l-4 border-[#10B981] pl-3' : 'text-[#8A94A6] hover:bg-[#111C2E] hover:text-white' }}">
+                    <svg class="w-5 h-5 {{ request()->is('booking') ? 'text-[#10B981]' : 'text-[#475569] group-hover:text-[#94A3B8]' }}"
+                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                    </svg>
+                    <span>Active Rides</span>
+                </a>
+
+                <!-- Wallet -->
+                <a href="/wallet"
+                    class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-semibold transition-all group {{ request()->is('wallet') ? 'bg-[#1E293B] text-white border-l-4 border-[#10B981] pl-3' : 'text-[#8A94A6] hover:bg-[#111C2E] hover:text-white' }}">
+                    <svg class="w-5 h-5 {{ request()->is('wallet') ? 'text-[#10B981]' : 'text-[#475569] group-hover:text-[#94A3B8]' }}"
+                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                    </svg>
+                    <span>Wallet</span>
+                </a>
+
+                <!-- Settings -->
+                <a href="/settings"
+                    class="flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-semibold transition-all group {{ request()->is('settings') ? 'bg-[#1E293B] text-white border-l-4 border-[#10B981] pl-3' : 'text-[#8A94A6] hover:bg-[#111C2E] hover:text-white' }}">
+                    <svg class="w-5 h-5 {{ request()->is('settings') ? 'text-[#10B981]' : 'text-[#475569] group-hover:text-[#94A3B8]' }}"
+                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.754c-.29.218-.44.573-.4.928a4.06 4.06 0 0 1 0 .252c-.04.354.11.71.4.928l1.003.754c.478.36.583 1.043.26 1.43l-1.296 2.247a1.125 1.125 0 0 1-1.37.49l-1.216-.456a1.125 1.125 0 0 0-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281a1.125 1.125 0 0 0-.644-.87a6.52 6.52 0 0 1-.22-.127a1.125 1.125 0 0 0-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.754c.29-.218.44-.573.4-.928a4.036 4.036 0 0 1 0-.252c.04-.354-.11-.71-.4-.928l-1.004-.754a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.49l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128c.332-.183.582-.495.644-.869l.214-1.28Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- User Profile Label -->
+        <div class="text-sm font-semibold text-slate-400 pt-4 border-t border-slate-800">
+            {{ auth()->user()->name ?? 'Guest' }} Rider
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT SPACE -->
+    <main class="flex-1 p-10 max-w-7xl mx-auto w-full">
+
+        <!-- Header Section -->
+        <header class="flex justify-between items-center mb-10">
             <div>
-                <div class="px-lg py-xl flex items-center gap-md">
-                    <span class="material-symbols-outlined text-primary text-[32px]">two_wheeler</span>
-                    <span class="font-headline-md text-headline-md tracking-tighter uppercase">VELEX</span>
-                </div>
-                <div class="px-md mb-lg">
-                    <button class="w-full bg-[#0F8A5F] hover:bg-primary-container text-white py-sm px-md rounded-lg flex items-center justify-between transition-colors group">
-                        <div class="flex flex-col items-start">
-                            <span class="font-label-sm text-label-sm opacity-80 uppercase tracking-widest">Switch To</span>
-                            <span class="font-label-md text-label-md font-bold">OWNER MODE</span>
-                        </div>
-                        <span class="material-symbols-outlined transition-transform group-hover:rotate-180">sync_alt</span>
-                    </button>
-                </div>
-                <nav class="px-base" data-active-classes="bg-white/5 border-l-4 border-primary text-white">
-                    <a aria-current="page" class="flex items-center px-lg py-md mb-xs transition-all font-body-md bg-white/5 border-l-4 border-primary text-white" data-path="dashboard" href="{{ route('dashboard') }}">
-                        <span class="material-symbols-outlined mr-md">grid_view</span>Dashboard
-                    </a>
-                    <a class="flex items-center px-lg py-md mb-xs text-white/60 hover:text-white transition-all font-body-md" data-path="browse-motorbikes" href="{{ route('catalog.index') }}">
-                        <span class="material-symbols-outlined mr-md">motorcycle</span>Browse Motorbikes
-                    </a>
-                    <a class="flex items-center px-lg py-md mb-xs text-white/60 hover:text-white transition-all font-body-md" data-path="active-rides" href="{{ route('dashboard') }}#active-rides">
-                        <span class="material-symbols-outlined mr-md">route</span>Active Rides
-                    </a>
-                    <a class="flex items-center px-lg py-md mb-xs text-white/60 hover:text-white transition-all font-body-md" data-path="wallet" href="{{ route('wallet.index') }}">
-                        <span class="material-symbols-outlined mr-md">account_balance_wallet</span>Wallet
-                    </a>
-                    <a class="flex items-center px-lg py-md mb-xs text-white/60 hover:text-white transition-all font-body-md" data-path="settings" href="#">
-                        <span class="material-symbols-outlined mr-md">settings</span>Settings
-                    </a>
-                </nav>
+                <span class="text-xs font-bold text-emerald-600 tracking-widest uppercase">
+                    RIDER STATUS: {{ $rider_status }}
+                </span>
+                <h1 class="text-3xl font-black text-slate-900 mt-1">Welcome Back, {{ $user_name }}!</h1>
+                <p class="text-slate-500 text-sm font-medium">Ready for your next ride?</p>
             </div>
-            <!-- Auth User Profile Placed Nicely at Sidebar Bottom -->
-            <div class="p-md border-t border-white/10 bg-black/20">
-                <div class="font-headline-md text-[16px] truncate text-white/90">{{ Auth::user()->name ?? 'Guest Rider' }}</div>
+            <a href="/rent"
+                class="bg-emerald-900 hover:bg-emerald-950 text-white text-sm font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-md shadow-emerald-900/10 transition">
+                Rent a Motorbike <span>➔</span>
+            </a>
+        </header>
+
+        <!-- TOP CORE METRICS GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <!-- Active Rides Card -->
+            <div class="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <span
+                        class="text-[10px] font-bold tracking-wider uppercase text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">Real-Time</span>
+                </div>
+                <div class="text-4xl font-black text-slate-900">{{ $active_rides_count }}</div>
+                <div class="text-xs font-bold text-slate-400 mt-1">Active Rides</div>
             </div>
-        </aside>
 
-        <!-- Main Content Wrapper (Offset to clear fixed sidebar) -->
-        <main class="flex-1 ml-[280px] min-w-0">
-
-            <!-- Header Section -->
-            <section class="relative px-xl py-xl overflow-hidden">
-                <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-lg">
-                    <div class="max-w-2xl">
-                        <div class="flex items-center gap-sm mb-md">
-                            <span class="w-8 h-[2px] bg-primary"></span>
-                            <span class="font-label-md text-label-md text-primary uppercase tracking-[0.2em]">Rider Status: Intermediate</span>
-                        </div>
-                        <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tighter">
-                            Welcome Back, {{ Auth::user()?->name ?? 'Guest' }}!<br />
-                            <span class="text-on-surface-variant/60 font-normal text-headline-lg">Ready for your next ride?</span>
-                        </h1>
-                    </div>
-                    <div class="pb-base">
-                        <a href="{{ route('catalog.index') }}" class="group inline-flex items-center gap-md bg-primary text-on-primary px-lg py-md rounded-xl shadow-lg hover:shadow-primary/20 transition-all hover:-translate-y-1">
-                            <span class="font-headline-md text-[18px]">Rent a Motorbike</span>
-                            <span class="material-symbols-outlined transition-transform group-hover:translate-x-2">arrow_forward</span>
-                        </a>
-                    </div>
+            <!-- Current Balance Card -->
+            <div class="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <span
+                        class="text-[10px] font-bold tracking-wider uppercase text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">Top
+                        Up</span>
                 </div>
-                <div class="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
-            </section>
+                <div class="text-4xl font-black text-slate-900">${{ number_format($current_balance, 2) }}</div>
+                <div class="text-xs font-bold text-slate-400 mt-1">Current Balance</div>
+            </div>
 
-            <!-- Metrics Grid -->
-            <section class="px-xl mb-xl">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-                    <!-- Active Rides Card -->
-                    <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm flex flex-col justify-between group hover:bg-on-primary-container transition-colors border-l-4 border-primary">
-                        <div class="flex justify-between items-start mb-xl">
-                            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                <span class="material-symbols-outlined text-[28px]">route</span>
-                            </div>
-                            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Real-time</span>
-                        </div>
-                        <div>
-                            <div class="font-headline-xl text-headline-xl text-on-surface mb-xs" id="counter-rides">1</div>
-                            <div class="font-body-md text-body-md text-on-surface-variant">Active Rides</div>
-                        </div>
-                    </div>
+            <!-- Lifetime Spend Card (Highlighted) -->
+            <div class="bg-slate-900 border border-slate-900 p-6 rounded-3xl shadow-sm text-white">
+                <div class="flex justify-between items-center mb-4">
+                    <span
+                        class="text-[10px] font-bold tracking-wider uppercase text-emerald-400 bg-white/10 px-2.5 py-1 rounded-full">📈
+                        +12%</span>
+                </div>
+                <div class="text-4xl font-black text-white">${{ number_format($lifetime_spend, 2) }}</div>
+                <div class="text-xs font-semibold text-slate-400 mt-1">Lifetime Spend</div>
+            </div>
+        </div>
 
-                    <!-- Wallet Card -->
-                    <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm flex flex-col justify-between group hover:bg-secondary-container transition-colors">
-                        <div class="flex justify-between items-start mb-xl">
-                            <div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
-                                <span class="material-symbols-outlined text-[28px]">account_balance_wallet</span>
-                            </div>
-                            <a href="{{ route('wallet.index') }}" class="text-secondary hover:underline font-label-sm text-label-sm uppercase tracking-tighter">Top Up</a>
-                        </div>
-                        <div>
-                            <div class="font-headline-xl text-headline-xl text-on-surface mb-xs flex items-baseline gap-xs">
-                                <span class="text-headline-md opacity-40">$</span>30.00
-                            </div>
-                            <div class="font-body-md text-body-md text-on-surface-variant">Current Balance</div>
-                        </div>
-                    </div>
+        <!-- TWO-COLUMN FOOTER DISPLAY -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    <!-- Lifetime Spent Card -->
-                    <div class="bg-inverse-surface p-lg rounded-xl shadow-xl flex flex-col justify-between relative overflow-hidden">
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-xl">
-                                <div class="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center text-white">
-                                    <span class="material-symbols-outlined text-[28px]">payments</span>
-                                </div>
-                                <div class="flex items-center gap-xs text-primary-fixed font-label-sm">
-                                    <span class="material-symbols-outlined text-sm">trending_up</span>
-                                    <span>+12%</span>
-                                </div>
+            <!-- Column 1 & 2: Live Tracking Dashboard -->
+            <div class="lg:col-span-2">
+                <h2 class="text-lg font-bold text-slate-900 mb-4">Live Tracking</h2>
+
+                @if ($active_ride)
+                    <div
+                        class="bg-white border border-slate-100 p-4 rounded-3xl shadow-sm flex flex-col md:flex-row gap-5">
+                        <!-- Simulated Map Block -->
+                        <div class="w-full md:w-1/2 h-56 bg-slate-200 rounded-2xl relative flex flex-col justify-end p-3 overflow-hidden bg-cover bg-center"
+                            style="background-image: url('https://placeholder.pics/svg/400x300/E2E8F0/64748B/Map%20View');">
+                            <div
+                                class="bg-white/95 backdrop-blur-sm shadow-sm rounded-xl p-3 text-[11px] font-bold text-slate-800 border border-slate-100">
+                                📍 Currently at: <span
+                                    class="text-slate-500 font-medium">{{ $active_ride['address'] }}</span>
                             </div>
+                        </div>
+
+                        <!-- Panel Metrics & Direct Operations -->
+                        <div class="flex-1 flex flex-col justify-between py-1">
                             <div>
-                                <div class="font-headline-xl text-headline-xl text-white mb-xs flex items-baseline gap-xs">
-                                    <span class="text-headline-md opacity-40">$</span>770.00
-                                </div>
-                                <div class="font-body-md text-body-md text-white/60">Lifetime Spend</div>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 h-16 opacity-20">
-                            <svg class="w-full h-full preserve-3d" preserveAspectRatio="none" viewBox="0 0 100 40">
-                                <path class="text-primary" d="M0 35 Q 20 10, 40 25 T 80 5 T 100 20 V 40 H 0 Z" fill="currentColor"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Main Content Area: Live Tracking & Featured -->
-            <section class="px-xl grid grid-cols-1 lg:grid-cols-12 gap-xl items-start pb-xl" id="active-rides">
-                <!-- Live Tracking Card -->
-                <div class="lg:col-span-8 space-y-lg">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-headline-md text-headline-md text-on-surface">Live Tracking</h3>
-                        <div class="flex items-center gap-sm">
-                            <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
-                            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Active Session</span>
-                        </div>
-                    </div>
-                    <div class="bg-surface-container-lowest rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row">
-                        <!-- Map Preview -->
-                        <div class="md:w-1/2 h-64 md:h-auto relative">
-                            <div class="w-full h-full bg-cover bg-center min-h-[250px]" data-location="Karachi, Pakistan" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlTXJtOv74KANGHaRbcRs_arOuxpmkLsDzaZy1y5pYXFeXW-qYydobZZkckYFV6si-Qr0OWanKimP8DkFF5PEQ8O6V6JJv2664ahDgoACPK2-Eeg1V6nltpnP-1Tee5tuSPvLX0DVpRN9b3WMWNkABZ2qOlMOeFK7k6qejxbvMMlmL4bhfXddkdcFbYeb6_oUsMBSDoCIsdbmoSOvcnWZ8-9KrM0yylzO_bwWr6jQwLAqfwOWHvpUM')"></div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-md">
-                                <div class="flex items-center gap-sm text-white">
-                                    <span class="material-symbols-outlined text-primary">location_on</span>
-                                    <span class="font-body-sm">Currently at: Khayaban-e-Ittehad</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Info Side -->
-                        <div class="md:w-1/2 p-lg flex flex-col justify-between bg-white">
-                            <div>
-                                <div class="flex justify-between items-start mb-md">
+                                <div class="flex justify-between items-start">
                                     <div>
-                                        <h4 class="font-headline-md text-headline-md text-on-surface">Honda CD70 Standard</h4>
-                                        <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter">Model A • License: KHI-7821</p>
+                                        <h3 class="text-lg font-extrabold text-slate-900 leading-tight">
+                                            {{ $active_ride['bike_name'] }}</h3>
+                                        <p class="text-[11px] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
+                                            MODEL {{ $active_ride['model'] }} • LICENSE: {{ $active_ride['license'] }}
+                                        </p>
                                     </div>
-                                    <div class="bg-surface-container-high px-sm py-xs rounded flex flex-col items-center">
-                                        <span class="material-symbols-outlined text-primary">battery_full</span>
-                                        <span class="font-label-sm text-[10px]">88%</span>
-                                    </div>
+                                    <span
+                                        class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-emerald-100 shrink-0">
+                                        🔋 {{ $active_ride['battery'] }}%
+                                    </span>
                                 </div>
-                                <div class="bg-amber-50 p-md rounded-lg flex items-center gap-md mb-lg">
-                                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
-                                        <span class="material-symbols-outlined">schedule</span>
-                                    </div>
+
+                                <!-- Dynamic Warning Bar -->
+                                <div
+                                    class="mt-4 bg-amber-50 border border-amber-100 text-amber-900 p-3.5 rounded-2xl flex items-start gap-3">
+                                    <span class="text-base mt-0.5">🕒</span>
                                     <div>
-                                        <div class="font-label-sm text-amber-800 font-bold uppercase tracking-widest">Due Return</div>
-                                        <div class="font-body-md text-amber-900">Today, 6:00 PM (2h 15m left)</div>
+                                        <div class="text-[10px] font-bold tracking-wider text-amber-700 uppercase">Due
+                                            Return</div>
+                                        <div class="text-xs font-semibold mt-0.5 text-amber-900">
+                                            {{ $active_ride['due_time'] }}</div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-md">
-                                <button class="py-sm px-md border-2 border-outline-variant text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md">Extend Time</button>
-                                <button class="py-sm px-md bg-error text-on-error hover:opacity-90 transition-opacity rounded-lg font-label-md">End Ride</button>
+
+                            <!-- Operation Buttons Form -->
+                            <div class="grid grid-cols-2 gap-3 mt-4">
+                                <form action="/api/rides/{{ $active_ride['id'] }}/extend" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold py-3 px-4 rounded-xl text-xs tracking-wide transition">
+                                        Extend Time
+                                    </button>
+                                </form>
+                                <form action="/api/rides/{{ $active_ride['id'] }}/end" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl text-xs tracking-wide shadow-sm transition">
+                                        End Ride
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
+                @else
+                    <div
+                        class="bg-white border border-slate-100 rounded-3xl p-8 text-center text-slate-400 font-medium text-sm">
+                        No active session running at the moment.
+                    </div>
+                @endif
+            </div>
+
+            <!-- Column 3: Recent Activity Lists -->
+            <div>
+                <h2 class="text-lg font-bold text-slate-900 mb-4">Recent Rides</h2>
+                <div class="space-y-3 mb-6">
+                    @foreach ($recent_rides as $ride)
+                        <div
+                            class="bg-white border border-slate-100 p-3 rounded-2xl shadow-sm flex items-center justify-between hover:border-slate-200 transition">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-xl shrink-0">
+                                    🏍️</div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900">{{ $ride['name'] }}</h4>
+                                    <p class="text-[11px] font-semibold text-slate-400 mt-0.5">{{ $ride['date'] }} •
+                                        {{ $ride['duration'] }}</p>
+                                </div>
+                            </div>
+                            <span
+                                class="text-sm font-extrabold text-slate-800">${{ number_format($ride['cost'], 2) }}</span>
+                        </div>
+                    @endforeach
                 </div>
 
-                <!-- Recent Activity & Recommendations -->
-                <div class="lg:col-span-4 space-y-lg">
-                    <h3 class="font-headline-md text-headline-md text-on-surface">Recent Rides</h3>
-                    <div class="space-y-md">
-                        <!-- Item 1 -->
-                        <div class="flex items-center gap-md p-md bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer group">
-                            <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0">
-                                <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Yamaha MT-07" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwDXY-Yx5N7H1VdM93u3Z6gfv4spjnMs3PURRF4IMePQ5AkonqAQ8qvf9gmc7PJ0Z12Qk_cKOYhz5aYOdutnD_90PX6chs1Zr_so-7rwsLb4gZi0poJgARqk3vTQ6fGRvqQsXK3oVELFtK5UNMMMjLDbI4G3Kyl4nt9gLnVESHHPRU8o98G_LWhTFFSXbMUvfRsp8AQAaTAB0L4KTORBLXPmOlc_3pb6dTuNUn9Y3iRXShvmECU3Zh" />
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="font-body-md font-bold truncate">Yamaha MT-07</div>
-                                <div class="font-label-sm text-on-surface-variant">Last Thursday • 4h 20m</div>
-                            </div>
-                            <div class="font-label-md text-on-surface">$45.00</div>
-                        </div>
-                        <!-- Item 2 -->
-                        <div class="flex items-center gap-md p-md bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer group">
-                            <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0">
-                                <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Vespa Primavera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-lC-_VJQXZLJOh0fhwW5DUcWImcplZ39BGvGEOG_pyS8BG0HSgImKm2xA54HnHKA2PeMzmYKUOvrr3CvF0_WIZtruhqN-_MFXEYp6TG5R9XHRtjrlCwB6J2XJRzjNtXUuqhnwROTIjZa1EG5sumTO2foA_C2wDbrQRbXz6OphPaJePxN7_nuhHNaY8NU6cawSilvodG6NUzAjaJSJAu5E3q_U2dOy30e9Z0wxsi0v85kJpSsf8q0c" />
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="font-body-md font-bold truncate">Vespa Primavera 150</div>
-                                <div class="font-label-sm text-on-surface-variant">March 12 • 1h 15m</div>
-                            </div>
-                            <div class="font-label-md text-on-surface">$12.50</div>
-                        </div>
-                        <!-- Item 3 -->
-                        <div class="flex items-center gap-md p-md bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer group">
-                            <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0">
-                                <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Royal Enfield" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQfoaAH1sLQE-7wwmwi2dwZbPYINrq55bzAlcox0a6_LNzSama7-iBq_e4cVhHJ5s5xkvZ1_awYWG1wZG1xJ-8G7cPmAj_rBNOjX3FnOPS2EOLgX-0J5R0Q638K_iYaAIFnLud1JAxwxQTBfrsjDGMdBVtZHCjsRMh7MCs4MdN1IdlRzdXZnXF1igOGawIxkZkZhmWInheKXt58NLUwZ_ctgWfnBDDXVheekJhUfz48LIf6Z6n9Zo6" />
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="font-body-md font-bold truncate">Royal Enfield Himalayan</div>
-                                <div class="font-label-sm text-on-surface-variant">March 08 • 8h 00m</div>
-                            </div>
-                            <div class="font-label-md text-on-surface">$82.00</div>
-                        </div>
-                    </div>
+                <!-- Promotion Card Placement -->
+                <div class="bg-emerald-950 text-white p-5 rounded-3xl relative overflow-hidden shadow-sm">
+                    <span
+                        class="text-[9px] font-bold tracking-widest text-emerald-400 uppercase bg-white/10 px-2.5 py-1 rounded-full">Pro
+                        Rider Offer</span>
+                    <h3 class="text-base font-extrabold mt-3 leading-snug">Unlock Unlimited Weekends</h3>
+                    <p class="text-xs text-slate-400 font-medium mt-1 leading-relaxed">Get 20% off all long-distance
+                        rentals starting Friday evening.</p>
 
-                    <!-- Promotion Card -->
-                    <div class="bg-primary text-on-primary p-lg rounded-xl relative overflow-hidden group">
-                        <div class="relative z-10">
-                            <div class="font-label-sm text-label-sm opacity-80 uppercase tracking-widest mb-xs">Pro Rider Offer</div>
-                            <div class="font-headline-md text-headline-md mb-md">Unlock Unlimited Weekends</div>
-                            <p class="font-body-sm mb-lg opacity-90">Get 20% off all long-distance rentals starting Friday evening.</p>
-                            <button class="w-full bg-white text-primary py-sm rounded-lg font-headline-md text-[16px] group-hover:scale-[1.02] transition-transform">Claim Offer</button>
-                        </div>
-                        <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-[120px] opacity-10 group-hover:rotate-12 transition-transform">speed</span>
-                    </div>
+                    <form action="/offers/claim" method="POST" class="mt-4">
+                        @csrf
+                        <button type="submit"
+                            class="w-full bg-white hover:bg-slate-50 text-emerald-950 font-bold py-2.5 px-4 rounded-xl text-xs tracking-wide transition">
+                            Claim Offer
+                        </button>
+                    </form>
                 </div>
-            </section>
-        </main>
-    </div>
+            </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const counter = document.getElementById('counter-rides');
-            if (counter) {
-                let count = 0;
-                const target = 1;
-                const interval = setInterval(() => {
-                    if (count < target) {
-                        count++;
-                        counter.innerText = count;
-                    } else {
-                        clearInterval(interval);
-                    }
-                }, 200);
-            }
-        });
-    </script>
+        </div>
+    </main>
+
 </body>
 
 </html>
