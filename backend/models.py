@@ -1,0 +1,149 @@
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    full_name = Column(String)
+
+    email = Column(String, unique=True)
+
+    phone = Column(String)
+
+    cnic = Column(String)
+
+    password = Column(String)
+
+    role = Column(String)
+
+    provider_type = Column(String, default="Individual")
+
+    company_name = Column(String, nullable=True)
+
+    company_address = Column(String, nullable=True)
+
+    company_logo = Column(String, nullable=True)
+
+    wallet_balance = Column(Float, default=2500.0)
+
+    reward_points = Column(Integer, default=120)
+
+    
+
+class Bike(Base):
+    __tablename__ = "bikes"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
+    bike_name = Column(String)
+
+    brand = Column(String)
+
+    model = Column(String)
+
+    bike_type = Column(String)
+
+    registration_number = Column(String)
+
+    color = Column(String)
+
+    city = Column(String)
+
+    price_per_hour = Column(Float)
+
+    price_per_day = Column(Float)
+
+    engine_cc = Column(String)
+
+    fuel_type = Column(String)
+
+    transmission = Column(String)
+
+    description = Column(String)
+
+    gps = Column(String)
+
+    helmet = Column(String)
+
+    image = Column(String)
+
+    documents = Column(String)
+
+    status = Column(String, default="available")
+
+
+
+    
+class Booking(Base):
+    __tablename__ = "bookings"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    customer_id = Column(Integer, ForeignKey("users.id"))
+
+    bike_id = Column(Integer, ForeignKey("bikes.id"))
+
+    booking_type = Column(String)      # Hourly / Daily
+
+    start_date = Column(String)
+
+    end_date = Column(String)
+
+    start_time = Column(String)
+
+    end_time = Column(String)
+
+    total_amount = Column(Float)
+
+    status = Column(String, default="Pending")
+    
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    booking_id = Column(Integer, ForeignKey("bookings.id"))
+
+    bike_id = Column(Integer, ForeignKey("bikes.id"))
+
+    customer_id = Column(Integer, ForeignKey("users.id"))
+
+    rating = Column(Integer)
+
+    review = Column(String)    
+
+
+
+class WithdrawRequest(Base):
+    __tablename__ = "withdraw_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
+    amount = Column(Float)
+
+    status = Column(String, default="Pending")    
+
+
+
+class Agreement(Base):
+    __tablename__ = "agreements"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    booking_id = Column(Integer, ForeignKey("bookings.id"))
+
+    customer_id = Column(Integer, ForeignKey("users.id"))
+
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
+    agreement_file = Column(String)
+
+    accepted = Column(String, default="Pending")
