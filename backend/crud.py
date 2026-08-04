@@ -2,6 +2,13 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
+
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
@@ -14,7 +21,7 @@ def create_user(db: Session, user: schemas.UserCreate):
         email=user.email,
         phone=user.phone,
         cnic=user.cnic,
-        password=user.password,
+        password=pwd_context.hash(user.password),
         role=user.role,
 
         # New Fields
@@ -33,12 +40,17 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 def login_user(db: Session, email: str, password: str):
 
-    return db.query(models.User).filter(
-
-        models.User.email == email,
-        models.User.password == password
-
+    user = db.query(models.User).filter(
+        models.User.email == email
     ).first()
+
+    if not user:
+        return None
+
+    if not pwd_context.verify(password, user.password):
+        return None
+
+    return user
 
 
 def create_bike(db: Session, bike: schemas.BikeCreate):

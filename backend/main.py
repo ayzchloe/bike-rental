@@ -7,12 +7,26 @@ from sqlalchemy import text
 import shutil
 import uuid
 import os
-
+from ai.recommendation import RecommendationRequest
+from ai.recommendation_service import recommend_bikes
 from database import engine, get_db
 import models
 import crud
 import schemas
 from pdf.generator import generate_agreement
+from ai.agreement_analyzer import analyze_agreement
+from ai.review_sentiment import analyze_review
+from schemas import ReviewRequest, PricePredictionRequest
+from ai.price_service import predict_price
+from ai.fraud_service import detect_fraud
+from ai.maintenance_service import predict_maintenance
+from pydantic import BaseModel
+from ai.demand_service import predict_demand
+from schemas import DemandForecastRequest
+from ai.chat_service import chat
+from schemas import ChatRequest
+from database import get_db
+from datetime import datetime
 
 # Ensure database tables exist
 models.Base.metadata.create_all(bind=engine)
@@ -34,7 +48,7 @@ app = FastAPI()
 
 # Mount static and templates
 # app.mount("/static", StaticFiles(directory="static"), name="static")
-# templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates")
 
 # Helper: Get current authenticated user
 def get_current_user(request: Request, db: Session):
@@ -43,18 +57,15 @@ def get_current_user(request: Request, db: Session):
         return None
     return crud.get_user_by_id(db, int(user_id))
 
+
 @app.get("/")
-async def home(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user(request, db)
-    bikes = crud.get_available_bikes(db)[:3]  # Get top 3 available bikes
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request, 
-            "user": user,
-            "bikes": bikes
-        }
-    )
+async def root():
+    return {"status": "online", "message": "Velex API Service operational."}
+
+@app.get("/api/bikes/featured")
+async def get_featured_bikes(db: Session = Depends(get_db)):
+    bikes = crud.get_available_bikes(db)[:3]
+    return {"bikes": bikes}
 
 @app.get("/login")
 async def login(
@@ -112,8 +123,21 @@ async def login_user(
             }
         )
 
-    response.set_cookie(key="user_id", value=str(user.id), httponly=True)
-    response.set_cookie(key="user_role", value=user.role, httponly=True)
+    response.set_cookie(
+    key="user_id",
+    value=str(user.id),
+    httponly=True,
+    samesite="lax",
+    secure=False
+)
+
+    response.set_cookie(
+    key="user_role",
+    value=user.role,
+    httponly=True,
+    samesite="lax",
+    secure=False
+)
     return response
 
 @app.get("/logout")
@@ -339,12 +363,116 @@ async def confirm_booking(
     end_date: str = Form(...),
     start_time: str = Form(...),
     end_time: str = Form(...),
-    total_amount: float = Form(...),
     db: Session = Depends(get_db)
 ):
     user = get_current_user(request, db)
+
     if not user:
         return RedirectResponse("/login", status_code=303)
+
+    bike = crud.get_bike_by_id(db, bike_id)
+
+    if bike is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Bike not found"
+        )
+
+    # ==========================
+    # Debug Information
+    # ==========================
+    print("=" * 60)
+    print("Bike ID:", bike_id)
+    print("Booking Type:", booking_type)
+    print("Start Date:", start_date)
+    print("End Date:", end_date)
+    print("Start Time:", start_time)
+    print("End Time:", end_time)
+    print("=" * 60)
+
+    total_amount = 0
+
+    booking_type = booking_type.lower().strip()
+
+    # ==========================
+    # Hour Booking
+    # ==========================
+    if booking_type == "hour":
+
+        start = datetime.strptime(
+            f"{start_date} {start_time}",
+            "%Y-%m-%d %H:%M"
+        )
+
+        end = datetime.strptime(
+            f"{end_date} {end_time}",
+            "%Y-%m-%d %H:%M"
+        )
+
+        hours = (end - start).total_seconds() / 3600
+
+        print("Calculated Hours:", hours)
+
+        if hours <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="End time must be greater than start time."
+            )
+
+        total_amount = round(hours * bike.price_per_hour, 2)
+
+    # ==========================
+    # Day Booking
+    # ==========================
+    elif booking_type == "day":
+
+        start = datetime.strptime(start_date, "%Y-%m-%d")
+        end = datetime.strptime(end_date, "%Y-%m-%d")
+
+        days = (end - start).days + 1
+
+        print("Calculated Days:", days)
+
+        if days <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="End date must be after start date."
+            )
+
+        total_amount = days * bike.price_per_day
+
+    # ==========================
+    # Month Booking
+    # ==========================
+    elif booking_type == "month":
+
+        start = datetime.strptime(start_date, "%Y-%m-%d")
+        end = datetime.strptime(end_date, "%Y-%m-%d")
+
+        days = (end - start).days + 1
+
+        print("Calculated Days:", days)
+
+        if days <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="End date must be after start date."
+            )
+
+        months = max(1, round(days / 30))
+
+        monthly_price = bike.price_per_day * 25
+
+        total_amount = months * monthly_price
+
+    else:
+
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid booking type received: {booking_type}"
+        )
+
+    print("Total Amount:", total_amount)
 
     booking = schemas.BookingCreate(
         customer_id=user.id,
@@ -356,7 +484,11 @@ async def confirm_booking(
         end_time=end_time,
         total_amount=total_amount
     )
+
     crud.create_booking(db, booking)
+
+    print("Booking Created Successfully")
+
     return RedirectResponse(
         "/my-bookings",
         status_code=303
@@ -435,56 +567,176 @@ async def wallet(request: Request, db: Session = Depends(get_db)):
     )
 
 @app.post("/wallet/topup")
-async def wallet_topup(request: Request, amount: float = Form(...), db: Session = Depends(get_db)):
+async def wallet_topup(
+    request: Request,
+    amount: int = Form(...),
+    db: Session = Depends(get_db)
+):
+
     user = get_current_user(request, db)
+
     if not user:
         return RedirectResponse("/login", status_code=303)
-    user.wallet_balance = (user.wallet_balance or 0.0) + amount
+
+    # Minimum amount
+    if amount < 100:
+
+        return templates.TemplateResponse(
+            "wallet.html",
+            {
+                "request": request,
+                "user": user,
+                "message": "Minimum top-up is Rs.100"
+            }
+        )
+
+    # Maximum amount
+    if amount > 5000:
+
+        return templates.TemplateResponse(
+            "wallet.html",
+            {
+                "request": request,
+                "user": user,
+                "message": "Maximum top-up is Rs.5000"
+            }
+        )
+
+    user.wallet_balance += amount
+    # Save Transaction History
+    transaction = models.WalletTransaction(
+    user_id=user.id,
+    amount=amount,
+    transaction_type="Credit",
+    description="Wallet Top-up"
+)
+
+    db.add(transaction)
+
     db.commit()
-    return RedirectResponse("/wallet", status_code=303)
+
+    return RedirectResponse(
+        "/wallet",
+        status_code=303
+    )
 
 @app.get("/notifications")
 async def notifications(request: Request, db: Session = Depends(get_db)):
     user = get_current_user(request, db)
+
     if not user:
         return RedirectResponse("/login", status_code=303)
-        
-    # Generate dynamic notifications from user's booking states
-    bookings = db.query(models.Booking).filter(models.Booking.customer_id == user.id).all()
+
+    bookings = (
+        db.query(models.Booking)
+        .filter(models.Booking.customer_id == user.id)
+        .all()
+    )
+
     notifs = []
+
     for b in bookings:
-        bike = db.query(models.Bike).filter(models.Bike.id == b.bike_id).first()
+
+        bike = db.query(models.Bike).filter(
+            models.Bike.id == b.bike_id
+        ).first()
+
         bike_name = bike.bike_name if bike else "Bike"
+
         if b.status == "Approved":
+
             notifs.append({
+
                 "title": "Booking Approved",
+
                 "message": f"Your booking for {bike_name} has been approved. Please review and sign the agreement.",
+
                 "class": "success",
-                "time": "Recent"
+
+                "time": "Recent",
+
+                "booking_id": b.id
+
             })
+
         elif b.status == "Pending":
+
             notifs.append({
+
                 "title": "Booking Pending",
+
                 "message": f"Your booking request for {bike_name} is currently pending owner review.",
+
                 "class": "warning",
-                "time": "Recent"
+
+                "time": "Recent",
+
+                "booking_id": b.id
+
             })
-            
+
+        elif b.status == "Rejected":
+
+            notifs.append({
+
+                "title": "Booking Rejected",
+
+                "message": f"Unfortunately your booking for {bike_name} was rejected by the owner.",
+
+                "class": "danger",
+
+                "time": "Recent",
+
+                "booking_id": b.id
+
+            })
+
+        elif b.status == "Completed":
+
+            notifs.append({
+
+                "title": "Ride Completed",
+
+                "message": f"Your ride for {bike_name} has been completed. Please leave a review.",
+
+                "class": "info",
+
+                "time": "Recent",
+
+                "booking_id": b.id
+
+            })
+
     if not notifs:
+
         notifs.append({
+
             "title": "Welcome to Bike Sharing",
+
             "message": "Explore available bikes and start booking your rides today!",
+
             "class": "primary",
-            "time": "Just now"
+
+            "time": "Just now",
+
+            "booking_id": 0
+
         })
-        
+
     return templates.TemplateResponse(
+
         "notifications.html",
+
         {
+
             "request": request,
+
             "user": user,
+
             "notifications": notifs
+
         }
+
     )
 
 @app.get("/profile")
@@ -1213,3 +1465,242 @@ async def download_agreement(booking_id: int, request: Request, db: Session = De
         agreement_record.agreement_file,
         filename=f"Agreement_{booking_id}.pdf"
     )
+
+
+@app.post("/ai/recommend-bike")
+
+async def ai_recommend(
+
+        request: RecommendationRequest,
+
+        db: Session = Depends(get_db)
+
+):
+
+    bikes = db.query(models.Bike).all()
+
+    result = recommend_bikes(
+
+        bikes,
+
+        request.dict()
+
+    )
+
+    response = []
+
+    for item in result:
+
+        bike = item["bike"]
+
+        response.append({
+
+    "bike_name": bike.bike_name,
+
+    "brand": bike.brand,
+
+    "model": bike.model,
+
+    "bike_type": bike.bike_type,
+
+    "city": bike.city,
+
+    "price_per_day": bike.price_per_day,
+
+    "score": item["score"],
+
+    "reasons": item["reasons"]
+
+})
+
+
+
+    return {
+
+        "recommendations": response
+
+    }
+
+
+@app.post("/ai/agreement-analysis")
+async def agreement_analysis(data: dict):
+
+    result = analyze_agreement(
+        data["agreement"]
+    )
+
+    return {
+        "analysis": result
+    }
+
+
+@app.post("/ai/review-analysis")
+async def review_analysis(data: ReviewRequest):
+
+    result=analyze_review(data.review)
+
+    return {
+        "analysis":result
+    }
+
+@app.get("/ai/price-prediction/{bike_id}")
+
+async def ai_price_prediction(
+
+    bike_id: int,
+
+    db: Session = Depends(get_db)
+
+):
+
+    bike = db.query(models.Bike).filter(
+
+        models.Bike.id == bike_id
+
+    ).first()
+
+    if not bike:
+
+        raise HTTPException(
+
+            status_code=404,
+
+            detail="Bike not found"
+
+        )
+
+    result = predict_price(bike)
+
+    return result
+
+@app.post("/ai/fraud-detection")
+async def fraud_detection(
+    data: schemas.FraudRequest,
+    db: Session = Depends(get_db)
+):
+
+    customer = db.query(models.User).filter(
+        models.User.id == data.customer_id
+    ).first()
+
+    bike = db.query(models.Bike).filter(
+        models.Bike.id == data.bike_id
+    ).first()
+
+    booking_count = db.query(models.Booking).filter(
+        models.Booking.customer_id == data.customer_id
+    ).count()
+
+    result = detect_fraud(
+        customer,
+        bike,
+        data.booking_amount,
+        booking_count
+    )
+
+    return {
+        "analysis": result
+    }
+
+
+
+@app.post("/ai/maintenance-prediction")
+
+async def maintenance_prediction(
+
+    data: schemas.MaintenanceRequest,
+
+    db: Session = Depends(get_db)
+
+):
+
+    bike = db.query(models.Bike).filter(
+
+        models.Bike.id == data.bike_id
+
+    ).first()
+
+    if not bike:
+
+        raise HTTPException(
+
+            status_code=404,
+
+            detail="Bike not found"
+
+        )
+
+    booking_count = db.query(models.Booking).filter(
+
+        models.Booking.bike_id == bike.id
+
+    ).count()
+
+    reviews = db.query(models.Review).filter(
+
+        models.Review.bike_id == bike.id
+
+    ).all()
+
+    average_rating = None
+
+    if reviews:
+
+        average_rating = sum(
+
+            r.rating for r in reviews
+
+        ) / len(reviews)
+
+    result = predict_maintenance(
+
+        bike,
+
+        booking_count,
+
+        average_rating
+
+    )
+
+    return {
+
+        "analysis": result
+
+    }
+
+
+
+@app.post("/ai/price-prediction")
+async def ai_price_prediction(request: PricePredictionRequest):
+
+    result = predict_price(request)
+
+    return {
+        "prediction": result
+    }
+
+
+@app.post("/ai/demand-forecast")
+async def ai_demand_forecast(request: DemandForecastRequest):
+
+    result = predict_demand(request.dict())
+
+    return {
+
+        "forecast": result
+
+    }
+
+
+@app.post("/ai/chat")
+async def ai_chat(
+    request: ChatRequest,
+    db: Session = Depends(get_db)
+):
+
+    result = chat(
+        request.message,
+        db
+    )
+
+    return result

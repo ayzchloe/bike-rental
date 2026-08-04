@@ -95,3 +95,54 @@ class AgreementCreate(BaseModel):
     agreement_file: str
 
     accepted: str = "Pending"    
+
+
+from pydantic import BaseModel
+
+
+class ReviewRequest(BaseModel):
+    review: str
+
+
+
+class FraudRequest(BaseModel):
+
+    customer_id: int
+    bike_id: int
+    booking_amount: float   
+
+
+
+
+class MaintenanceRequest(BaseModel):
+
+    bike_id: int
+
+
+
+class PricePredictionRequest(BaseModel):
+    brand: str
+    engine_cc: int
+    bike_type: str
+    gps: str
+    helmet: str
+    city: str
+
+
+from pydantic import BaseModel
+
+
+class DemandForecastRequest(BaseModel):
+
+    city: str
+
+    weather: str
+
+    day: str
+
+    month: str    
+
+
+class ChatRequest(BaseModel):
+
+    message: str    

@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Text
+from sqlalchemy.orm import relationship
 from database import Base
+from datetime import datetime, UTC
 
 
 class User(Base):
@@ -114,10 +116,17 @@ class Review(Base):
 
     customer_id = Column(Integer, ForeignKey("users.id"))
 
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
     rating = Column(Integer)
 
-    review = Column(String)    
+    review = Column(Text)
 
+    sentiment = Column(String)
+
+    ai_score = Column(Float)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class WithdrawRequest(Base):
@@ -147,3 +156,23 @@ class Agreement(Base):
     agreement_file = Column(String)
 
     accepted = Column(String, default="Pending")
+
+
+class WalletTransaction(Base):
+
+    __tablename__ = "wallet_transactions"
+
+    id = Column(Integer, primary_key=True)
+
+    user_id = Column(Integer)
+
+    amount = Column(Float)
+
+    transaction_type = Column(String)
+
+    description = Column(String)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+
